@@ -1,0 +1,13 @@
+{
+  "name": "com.kd3n1z.unitygram",
+  "version": "0.0.1",
+  "displayName": "UnityGram",
+  "description": "UnityGram is a JavaScript wrapper that enables Unity to interact with the Telegram Web App API.",
+  "author": {
+    "name": "Denis Komarkov",
+    "url": "https://komarkov.com/"
+  },
+  "license": "MIT",
+  "documentationUrl": "https://github.com/kd3n1z/unitygram/blob/main/README.md#usage",
+  "unity": "2021.3"
+}
