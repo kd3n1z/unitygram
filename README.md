@@ -19,8 +19,7 @@ API reference:
 > UnityGram is still under development, so not all features of the original API are available yet.
 
 > [!NOTE]
-> The library automatically injects a link to the Telegram JS script into the `index.html` during the `OnPostprocessBuild` process.
-> Additionally, a basic visual loader is included by default, which can be disabled by #defining `UNITYGRAM_NO_LOADER` in Unity.
+> During the `OnPostprocessBuild` process, the library injects a link to the Telegram JS script into `index.html` and modifies Unity's built-in script to enforce fullscreen mode, bypassing the default user-agent check. It also includes a basic visual loader by default, which can be disabled by defining `UNITYGRAM_NO_LOADER` in Unity.
 
 Example:
 
