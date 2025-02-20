@@ -6,7 +6,7 @@ UnityGram is a JavaScript wrapper that enables Unity to interact with the Telegr
 
 -   Open Package Manager
 -   Add package from git URL:
-    `https://github.com/kd3n1z/grayscale.git`
+    `https://github.com/kd3n1z/unitygram.git`
 
 ## Usage
 
