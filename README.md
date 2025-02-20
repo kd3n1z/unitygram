@@ -20,7 +20,7 @@ API reference:
 
 > [!NOTE]
 > The library automatically injects a link to the Telegram JS script into the `index.html` during the `OnPostprocessBuild` process.
-> Additionally, a basic visual loader is included by default, which can be disabled by defining `#UNITYGRAM_NO_LOADER` in Unity.
+> Additionally, a basic visual loader is included by default, which can be disabled by #defining `UNITYGRAM_NO_LOADER` in Unity.
 
 Example:
 
