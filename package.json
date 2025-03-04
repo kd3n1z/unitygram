@@ -1,6 +1,6 @@
 {
   "name": "com.kd3n1z.unitygram",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "displayName": "UnityGram",
   "description": "UnityGram is a JavaScript wrapper that enables Unity to interact with the Telegram Web App API.",
   "author": {

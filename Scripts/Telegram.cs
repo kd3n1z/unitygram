@@ -1,46 +1,97 @@
+using AOT;
+using System;
 using UnityEngine;
 
 namespace UnityGram {
     public static partial class Telegram {
+        private static readonly bool Version8;
+
         // ReSharper disable InconsistentNaming
-        /// <summary>
-        /// A string with raw data transferred to the Mini App, convenient for <a href="https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app">validating data</a>.<br/>
-        /// <b>WARNING:</b> <a href="https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app">Validate data</a> from this field before using it on the bot's server.
-        /// </summary>
+
+        #region Fields
+
         public static readonly string initData;
 
-        /// <summary>
-        /// An object with input data transferred to the Mini App.<br/>
-        /// <b>WARNING:</b> Data from this field should not be trusted. You should only use data from initData on the bot's server and only after it has been <a href="https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app">validated.</a>
-        /// </summary>
         public static readonly WebAppInitData initDataUnsafe;
 
-        /// <summary>
-        /// The version of the Bot API available in the user's Telegram app.
-        /// </summary>
         public static readonly string version;
 
-        /// <summary>
-        /// The name of the platform of the user's Telegram app.
-        /// </summary>
         public static readonly string platform;
 
-        /// <summary>
-        /// The color scheme currently used in the Telegram app. Either “light” or “dark”.
-        /// </summary>
-        public static string colorScheme => GetColorScheme();
+        public static string colorScheme { get; private set; }
 
-        /// <summary>
-        /// <b>Bot API 8.0+</b> <i>True</i>, if the Mini App is currently active. <i>False</i>, if the Mini App is minimized.
-        /// </summary>
-        public static bool isActive => GetIsActive();
+        public static bool isActive { get; private set; }
 
-        /// <summary>
-        /// <i>True</i>, if the Mini App is expanded to the maximum available height. <i>False</i>, if the Mini App occupies part of the screen and can be expanded to the full height using the <b>expand()</b> method.
-        /// </summary>
         public static bool isExpanded => GetIsExpanded();
 
+        public static float viewportHeight { get; private set; }
+        public static float viewportStableHeight { get; private set; }
+
+        #endregion
+
         // ReSharper restore InconsistentNaming
+
+        #region Function Wrappers
+
+        public static void RequestFullscreen() {
+            if (!Version8) {
+                throw new Exception("WebAppMethodUnsupported");
+            }
+
+            RequestFullscreenPrivate();
+        }
+
+        #endregion
+
+        #region Events
+
+        public static event Action OnActivated;
+        public static event Action OnDeactivated;
+        public static event Action OnThemeChanged;
+        public static event Action<bool> OnViewportChanged;
+
+        #endregion
+
+        #region Helpers
+
+        private static void UpdateColorScheme() {
+            colorScheme = GetColorScheme();
+        }
+
+        private static void UpdateViewportHeight() {
+            viewportHeight = GetViewportHeight();
+            viewportStableHeight = GetViewportStableHeight();
+        }
+
+        #endregion
+
+        #region Callbacks
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void CallbackActivated() {
+            isActive = true;
+            OnActivated?.Invoke();
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void CallbackDeactivated() {
+            isActive = false;
+            OnDeactivated?.Invoke();
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void CallbackThemeChanged() {
+            UpdateColorScheme();
+            OnThemeChanged?.Invoke();
+        }
+
+        [MonoPInvokeCallback(typeof(Action<bool>))]
+        private static void CallbackViewportChanged(bool isStateStable) {
+            UpdateViewportHeight();
+            OnViewportChanged?.Invoke(isStateStable);
+        }
+
+        #endregion
 
         static Telegram() {
             initData = GetInitData();
@@ -48,6 +99,16 @@ namespace UnityGram {
 
             version = GetVersion();
             platform = GetPlatform();
+
+            Version8 = IsVersionAtLeast("8.0");
+
+            if (Version8) {
+                AddEmptyEventListener("activated", CallbackActivated);
+                AddEmptyEventListener("deactivated", CallbackDeactivated);
+            }
+
+            AddEmptyEventListener("themeChanged", CallbackThemeChanged);
+            AddViewportChangedEventListener(CallbackViewportChanged);
         }
     }
 }

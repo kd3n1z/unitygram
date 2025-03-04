@@ -1,43 +1,56 @@
 mergeInto(LibraryManager.library, {
+  // Getters
   GetInitData: function () {
-    const returnStr = window.Telegram.WebApp.initData;
-    const bufferSize = lengthBytesUTF8(returnStr) + 1;
-    const buffer = _malloc(bufferSize);
-    stringToUTF8(returnStr, buffer, bufferSize);
-    return buffer;
+    return stringToNewUTF8(window.Telegram.WebApp.initData);
   },
   GetInitDataUnsafe: function () {
-    const returnStr = JSON.stringify(window.Telegram.WebApp.initDataUnsafe);
-    const bufferSize = lengthBytesUTF8(returnStr) + 1;
-    const buffer = _malloc(bufferSize);
-    stringToUTF8(returnStr, buffer, bufferSize);
-    return buffer;
+    return stringToNewUTF8(JSON.stringify(window.Telegram.WebApp.initDataUnsafe));
   },
   GetVersion: function () {
-    const returnStr = window.Telegram.WebApp.version;
-    const bufferSize = lengthBytesUTF8(returnStr) + 1;
-    const buffer = _malloc(bufferSize);
-    stringToUTF8(returnStr, buffer, bufferSize);
-    return buffer;
+    return stringToNewUTF8(window.Telegram.WebApp.version);
   },
   GetPlatform: function () {
-    const returnStr = window.Telegram.WebApp.platform;
-    const bufferSize = lengthBytesUTF8(returnStr) + 1;
-    const buffer = _malloc(bufferSize);
-    stringToUTF8(returnStr, buffer, bufferSize);
-    return buffer;
+    return stringToNewUTF8(window.Telegram.WebApp.platform);
   },
   GetColorScheme: function () {
-    const returnStr = window.Telegram.WebApp.colorScheme;
-    const bufferSize = lengthBytesUTF8(returnStr) + 1;
-    const buffer = _malloc(bufferSize);
-    stringToUTF8(returnStr, buffer, bufferSize);
-    return buffer;
-  },
-  GetIsActive: function() {
-    return window.Telegram.WebApp.isActive === true;
+    return stringToNewUTF8(window.Telegram.WebApp.colorScheme);
   },
   GetIsExpanded: function() {
     return window.Telegram.WebApp.isExpanded === true;
+  },
+  GetViewportHeight: function() {
+    return window.Telegram.WebApp.viewportHeight;
+  },
+  GetViewportStableHeight: function() {
+    return window.Telegram.WebApp.viewportStableHeight;
+  },
+  
+  // Event Listeners
+  AddEmptyEventListener: function(eventType, callback) {
+    window.Telegram.WebApp.onEvent(UTF8ToString(eventType), () => {
+      {{{ makeDynCall('v', 'callback') }}} (buffer);
+    });
+  },
+  AddViewportChangedEventListener: function(callback) {
+    window.Telegram.WebApp.onEvent("viewportChanged", (data) => {
+      {{{ makeDynCall('vb', 'callback') }}} (data.isStateStable);
+    });
+  },
+
+  // Functions
+  IsVersionAtLeast: function (version) {
+    return window.Telegram.WebApp.isVersionAtLeast(UTF8ToString(version));
+  },
+  DisableVerticalSwipes: function () {
+    window.Telegram.WebApp.disableVerticalSwipes();
+  },
+  RequestFullscreenPrivate: function () {
+    window.Telegram.WebApp.requestFullscreen();
+  },
+  Ready: function () {
+    window.Telegram.WebApp.ready();
+  },
+  Expand: function () {
+    window.Telegram.WebApp.expand();
   },
 });
