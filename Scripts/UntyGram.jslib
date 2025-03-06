@@ -24,6 +24,12 @@ mergeInto(LibraryManager.library, {
   GetViewportStableHeight: function() {
     return window.Telegram.WebApp.viewportStableHeight;
   },
+  GetSafeAreaInset: function() {
+    return stringToNewUTF8(JSON.stringify(window.Telegram.WebApp.safeAreaInset));
+  },
+  GetContentSafeAreaInset: function() {
+    return stringToNewUTF8(JSON.stringify(window.Telegram.WebApp.contentSafeAreaInset));
+  },
   
   // Event Listeners
   AddEmptyEventListener: function(eventType, callback) {
@@ -33,7 +39,7 @@ mergeInto(LibraryManager.library, {
   },
   AddViewportChangedEventListener: function(callback) {
     window.Telegram.WebApp.onEvent("viewportChanged", (data) => {
-      {{{ makeDynCall('vb', 'callback') }}} (data.isStateStable);
+      {{{ makeDynCall('vi', 'callback') }}} (data.isStateStable ? 1 : 0);
     });
   },
 

@@ -22,19 +22,21 @@ namespace UnityGram {
         private static float GetViewportHeight() => 0;
 
         private static float GetViewportStableHeight() => GetViewportHeight();
+        private static string GetSafeAreaInset() => "{}";
+        private static string GetContentSafeAreaInset() => "{}";
 
         #endregion
 
         #region Event Listeners
 
         private static void AddEmptyEventListener(string eventType, Action handler) { }
-        private static void AddViewportChangedEventListener(Action<bool> handler) { }
+        private static void AddViewportChangedEventListener(Action<int> handler) { }
 
         #endregion
 
         #region Functions
 
-        public static bool IsVersionAtLeast(string _) => false;
+        public static bool IsVersionAtLeast(string v) => false;
         public static void DisableVerticalSwipes() { }
         private static void RequestFullscreenPrivate() { }
         public static void Ready() { }

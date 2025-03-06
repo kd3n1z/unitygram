@@ -31,6 +31,12 @@ namespace UnityGram {
         [DllImport("__Internal")]
         private static extern float GetViewportStableHeight();
 
+        [DllImport("__Internal")]
+        private static extern string GetSafeAreaInset();
+
+        [DllImport("__Internal")]
+        private static extern string GetContentSafeAreaInset();
+
         #endregion
 
         #region Event Listeners
@@ -39,7 +45,7 @@ namespace UnityGram {
         private static extern void AddEmptyEventListener(string eventType, Action handler);
 
         [DllImport("__Internal")]
-        private static extern void AddViewportChangedEventListener(Action<bool> handler);
+        private static extern void AddViewportChangedEventListener(Action<int> handler);
 
         #endregion
 

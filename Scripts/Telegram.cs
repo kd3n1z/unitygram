@@ -11,21 +11,17 @@ namespace UnityGram {
         #region Fields
 
         public static readonly string initData;
-
         public static readonly WebAppInitData initDataUnsafe;
-
         public static readonly string version;
-
         public static readonly string platform;
-
         public static string colorScheme { get; private set; }
-
         public static bool isActive { get; private set; }
-
         public static bool isExpanded => GetIsExpanded();
-
         public static float viewportHeight { get; private set; }
         public static float viewportStableHeight { get; private set; }
+
+        public static WebAppSafeArea safeAreaInset { get; private set; }
+        public static WebAppSafeArea contentSafeAreaInset { get; private set; }
 
         #endregion
 
@@ -49,6 +45,8 @@ namespace UnityGram {
         public static event Action OnDeactivated;
         public static event Action OnThemeChanged;
         public static event Action<bool> OnViewportChanged;
+        public static event Action OnSafeAreaChanged;
+        public static event Action OnContentSafeAreaChanged;
 
         #endregion
 
@@ -61,6 +59,14 @@ namespace UnityGram {
         private static void UpdateViewportHeight() {
             viewportHeight = GetViewportHeight();
             viewportStableHeight = GetViewportStableHeight();
+        }
+
+        private static void UpdateSafeAreaInset() {
+            safeAreaInset = JsonUtility.FromJson<WebAppSafeArea>(GetSafeAreaInset());
+        }
+
+        private static void UpdateContentSafeAreaInset() {
+            contentSafeAreaInset = JsonUtility.FromJson<WebAppSafeArea>(GetContentSafeAreaInset());
         }
 
         #endregion
@@ -85,10 +91,28 @@ namespace UnityGram {
             OnThemeChanged?.Invoke();
         }
 
-        [MonoPInvokeCallback(typeof(Action<bool>))]
-        private static void CallbackViewportChanged(bool isStateStable) {
+        [MonoPInvokeCallback(typeof(Action<int>))]
+        private static void CallbackViewportChanged(int isStateStable) {
             UpdateViewportHeight();
-            OnViewportChanged?.Invoke(isStateStable);
+
+            if (!Version8) {
+                UpdateSafeAreaInset();
+                UpdateContentSafeAreaInset();
+            }
+
+            OnViewportChanged?.Invoke(isStateStable == 1);
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void CallbackSafeAreaChanged() {
+            UpdateSafeAreaInset();
+            OnSafeAreaChanged?.Invoke();
+        }
+
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void CallbackContentSafeAreaChanged() {
+            UpdateContentSafeAreaInset();
+            OnContentSafeAreaChanged?.Invoke();
         }
 
         #endregion
@@ -105,10 +129,19 @@ namespace UnityGram {
             if (Version8) {
                 AddEmptyEventListener("activated", CallbackActivated);
                 AddEmptyEventListener("deactivated", CallbackDeactivated);
+
+                AddEmptyEventListener("safeAreaChanged", CallbackSafeAreaChanged);
+                AddEmptyEventListener("contentSafeAreaChanged", CallbackContentSafeAreaChanged);
+
+                UpdateSafeAreaInset();
+                UpdateContentSafeAreaInset();
             }
 
             AddEmptyEventListener("themeChanged", CallbackThemeChanged);
             AddViewportChangedEventListener(CallbackViewportChanged);
+
+            UpdateColorScheme();
+            UpdateViewportHeight();
         }
     }
 }
